@@ -23,6 +23,7 @@ const routes = [
  
 ];
 
+//vue router setup
 export const router = new VueRouter({
   routes,
   mode: 'history'
