@@ -3,11 +3,28 @@
 <div>
 <el-card class="box-card">
   <div class="text item">
-    Manage Job Sites and Materials
+    Manage Job Sites and Materials {{ errors }} {{ msg }} 
+  
   </div>
 </el-card>
 </div>
 </template>
+
+<script>
+import Utils from '../mixins/utils.js';
+
+export default {
+  mixins: [Utils],
+  data: function() {
+    return {
+      errors: '--HOME--',
+      msg: this.getCreatedDate()
+    }
+  }
+}
+</script>
+
+
 
 <style>
   .text {
