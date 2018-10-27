@@ -5,15 +5,17 @@
   "author": "Maximilian Schwarzmüller",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --https --open --inline --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --inline --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.7",
     "express": "^4.16.3",
-    "vue": "^2.1.0",
+    "vue": "^2.5.17",
     "vue-router": "^3.0.1",
+    "vue-server-renderer": "^2.5.17",
+    "vuejs-auto-complete": "^0.7.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

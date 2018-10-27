@@ -1,10 +1,24 @@
 <template>
     <div id="customers">
-                
+               
         <app-customer-editor ref="editor"></app-customer-editor>
-        <h3>Customers</h3>
+
+<el-row :gutter="20">
+  <el-col :span="6">
+    <div class="grid-content bg-purple">
+     <autocomplete placeholder="Name Search" :source="[{id:1,name:'Acme'},{id:2,name:'JJ'}]">
+     </autocomplete>
+    </div>
+  </el-col>
+  <el-col :span="6">
+    <div class="grid-content bg-purple">
+    <el-tag>Customers</el-tag>
+    </div>
+  </el-col>
+</el-row>
+       
          <el-table
-      :data="tableData"
+      :data="getCustomers"
       max-height="400"
       size="mini"
       :default-sort = "{prop: 'firstName', order: 'descending'}"
@@ -15,19 +29,19 @@
         width="40">
       </el-table-column>
        <el-table-column
-        prop="companyName"
-        label="Co. Name"
+        prop="customer_name"
+        label="Cust Name"
         sortable
         width="100">
       </el-table-column>
       <el-table-column
-        prop="firstName"
+        prop="first_name"
         label="First"
         sortable
         width="100">
       </el-table-column>
       <el-table-column 
-        prop="lastName"
+        prop="last_name"
         label="Last"
         width="100">
       </el-table-column>
@@ -37,7 +51,7 @@
         width="100">
       </el-table-column>
       <el-table-column
-        prop="address1"
+        prop="address_1"
         label="Address"
         width="100">
       </el-table-column>
@@ -56,7 +70,7 @@
 
       </el-table-column>
       <el-table-column
-        prop="zip"
+        prop="postal_code"
         label="Zip"
         width="100">
       </el-table-column>
@@ -64,102 +78,115 @@
       label="Operations">
       <template slot-scope="scope">
         <el-button
-          size="mini"
-          @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+          type="primary" icon="el-icon-edit" circle
+          @click="handleEdit(scope.$index, scope.row)"></el-button>
         <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+          type="danger" icon="el-icon-delete" circle
+          @click="handleDelete(scope.$index, scope.row)"></el-button>
+        <el-button
+         type="info" icon="el-icon-setting" circle
+          ></el-button>
       </template>
     </el-table-column>
       </el-table>
-    <el-row :gutter="10" class="row-bg">
-  <el-col :xs="4" :sm="6" :md="7" :lg="8" :xl="9">
-   <div> 
-     <el-input
-    size="medium"
-    placeholder="Company Name"
-    v-model="strCompanyName">
-    <template slot="prepend">Company</template>
-    </el-input>
+      <el-collapse v-model="activeName" accordion>
+  <el-collapse-item title="Search" name="1">
+  <div>
+Search
   </div>
-  </el-col>
- 
-  </el-row>
+  </el-collapse-item>
+  <el-collapse-item title="NEW" name="2">
+    <div>
+    
+        <el-row :gutter="10" class="row-bg">
+      <el-col :xs="4" :sm="6" :md="7" :lg="8" :xl="9">
+       <div> 
+         <el-input
+        size="medium"
+        placeholder="Company Name"
+        v-model="strCompanyName">
+        <template slot="prepend">Company</template>
+        </el-input>
+      </div>
+      </el-col>
+     
+      </el-row>
 
-  <el-row :gutter="10" class="row-bg">
+      <el-row :gutter="10" class="row-bg">
+      
+      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+       <div> 
+         <el-input
+        size="medium"
+        placeholder="First Name"
+        v-model="strFirstName">
+        <template slot="prepend">First</template>
+        </el-input>
+      </div>
+      </el-col>
+
+      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+       <div> 
+         <el-input
+        size="medium"
+        placeholder="Last Name"
+        v-model="strLastName">
+        <template slot="prepend">Last</template>
+        </el-input>
+      </div>
+      </el-col>
+      <el-col :xs="2" :sm="3" :md="4" :lg="6" :xl="7">
+        <div>
+        <el-input
+        size="medium"
+        placeholder="Phone"
+        v-model="strPhone"> 
+        <template slot="prepend">Phone</template>
+        </el-input>
+        </div>
+      </el-col>
+      
+      </el-row>
+
+      <el-row :gutter="10" class="row-bg">
+     <el-col :xs="2" :sm="3" :md="4" :lg="8" :xl="9">
+       <div> 
+         <el-input
+        size="medium"
+        placeholder="Address1"
+        v-model="strAddress1">
+        <template slot="prepend">Address 1</template>
+        </el-input>
+      </div>
+      </el-col>
+      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="6">
+        <div>
+        <el-input
+        size="medium"
+        placeholder="City"
+        v-model="strCity"> 
+        <template slot="prepend">City</template>
+        </el-input>
+        </div>
+      </el-col>
+        <el-col :xs="2" :sm="3" :md="3" :lg="4" :xl="4">
+        <div>
+        <el-input
+        size="medium"
+        placeholder="Zipcode"
+        v-model="strZip"> 
+        <template slot="prepend">Zip</template>
+        </el-input>
+        </div>
+      </el-col>
+      </el-row>
+         <p></p>
+         <el-button type="primary" @click="saveCustomer()">Add</el-button>
+
+    </div>
+  </el-collapse-item>
   
-  <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
-   <div> 
-     <el-input
-    size="medium"
-    placeholder="First Name"
-    v-model="strFirstName">
-    <template slot="prepend">First</template>
-    </el-input>
-  </div>
-  </el-col>
-
-  <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
-   <div> 
-     <el-input
-    size="medium"
-    placeholder="Last Name"
-    v-model="strLastName">
-    <template slot="prepend">Last</template>
-    </el-input>
-  </div>
-  </el-col>
-  <el-col :xs="2" :sm="3" :md="4" :lg="6" :xl="7">
-    <div>
-    <el-input
-    size="medium"
-    placeholder="Phone"
-    v-model="strPhone"> 
-    <template slot="prepend">Phone</template>
-    </el-input>
-    </div>
-  </el-col>
-  
-  </el-row>
-
-  <el-row :gutter="10" class="row-bg">
- <el-col :xs="2" :sm="3" :md="4" :lg="8" :xl="9">
-   <div> 
-     <el-input
-    size="medium"
-    placeholder="Address1"
-    v-model="strAddress1">
-    <template slot="prepend">Address 1</template>
-    </el-input>
-  </div>
-  </el-col>
-  <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="6">
-    <div>
-    <el-input
-    size="medium"
-    placeholder="City"
-    v-model="strCity"> 
-    <template slot="prepend">City</template>
-    </el-input>
-    </div>
-  </el-col>
-    <el-col :xs="2" :sm="3" :md="3" :lg="4" :xl="4">
-    <div>
-    <el-input
-    size="medium"
-    placeholder="Zipcode"
-    v-model="strZip"> 
-    <template slot="prepend">Zip</template>
-    </el-input>
-    </div>
-  </el-col>
-  </el-row>
-
-
-     <p></p>
-     <el-button type="primary" @click="saveCustomer()">Add</el-button>
-
+</el-collapse>
     
     </div>
 </template>
@@ -167,15 +194,17 @@
 <script>
 import CustomerEditor from './CustomerEditor.vue'
 import { bus } from '../main'
-
+import Autocomplete from 'vuejs-auto-complete'
 
 export default {
   components:{
-    'app-customer-editor':CustomerEditor
+    'app-customer-editor':CustomerEditor,
+    Autocomplete
   },
 
   data() {
     return {
+      activeName: '1',
       strCompanyName: "",
       strFirstName: "",
       strLastName: "",
@@ -187,20 +216,30 @@ export default {
       
     };
   },
+  computed: {
+    getCustomers() {
+      return this.$store.state.customers;
+    }
+  },
   methods: {
     saveCustomer() {
       console.log("for city =" + this.strCity);
 
       //dispatch calls an action which allows the async behavior
-      this.$store.dispatch('addCustomer', {
-        companyName:this.strCompanyName,
-        firstName:this.strFirstName,
-        lastName:this.strLastName,
-        phone: this.strPhone,
-        address1: this.strAddress1,
+      this.$store.dispatch('createCustomer', {
+        
+        customer_name: this.strCompanyName,
+        first_name:this.strFirstName,
+        last_name:this.strLastName,
+        phone:this.strPhone,
+        address_1:this.strAddress1,
+        address_2:null,
         city:this.strCity,
-        zip: this.strZip
-      });
+        postal_code:this.strZip,
+        province:1,
+        country:1,
+        county:"Brazos"
+        });
 
       this.strCompanyName = "";
       this.strFirstName = "";
@@ -210,12 +249,6 @@ export default {
       this.strCity = "";
       this.strZip = "";
 
-      /*
-      this.$store.commit('saveCustomer', {
-        name:this.strName,
-        city:this.strCity
-      });
-      */
     },
     handleEdit(index, row) {
       var r = row;
@@ -232,7 +265,17 @@ export default {
       const property = column['city'];
       return row[property] === value;
     }
-  }
+  },
+   mounted() {
+    
+      this.$store.dispatch('fetchCustomerList', null)
+          .then((r) => {
+            
+            this.cList = r;
+      });
+  
+
+  },
  
 };
 </script>
@@ -240,10 +283,10 @@ export default {
 <style scoped>
 #customers {
   box-shadow: 1px 1px 2px 1px #ccc;
-  margin: 20px;
-  padding: 20px;
+  margin: 10px;
+  padding: 10px;
   display: inline-block;
-  width: 1000px;
+  width: 950px;
   vertical-align: top;
 }
 

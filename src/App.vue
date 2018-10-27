@@ -2,7 +2,7 @@
   <div id="app">
  
     <el-container>
-      <el-aside width="220px" >
+      <el-aside width="180px" >
         <el-menu default-active="1" class="el-menu-vertical-demo" :router="true" >
             <el-menu-item v-on:click="$router.push('/0')" index="0" router=router>
               <span slot="title"><h1>Home</h1></span>
@@ -26,7 +26,11 @@
 
         </el-menu>
       </el-aside>
-      <el-main> <router-view></router-view> </el-main>
+      <el-main>
+ 
+         <router-view>
+         </router-view>
+      </el-main>
     </el-container>
   
   </div>
@@ -36,14 +40,16 @@
   import Registration from './components/Registration.vue';
   import Registrations from './components/Registrations.vue';
   import Customers from './components/Customers.vue';
- 
+  import Autocomplete from 'vuejs-auto-complete'
+
   import { router } from './main'
 
 export default {
      components: {
         appRegistration: Registration,
         appRegistrations: Registrations,
-        appCustomers: Customers
+        appCustomers: Customers,
+        Autocomplete
     },
     methods: {
       handleOpen(key, keyPath) {
@@ -59,7 +65,7 @@ export default {
 <style>
 
   .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
+    width: 175px;
     min-height: 400px;
   }
 
@@ -72,6 +78,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 </style>

@@ -38,26 +38,7 @@ export const store = new Vuex.Store({
     saveCustomer(state, payload) {
       const date = new Date;
       
-      var newID = state.maxID + 1;
-      state.maxID = newID;
-
-      const customer = {
-        id: newID,
-        value: payload.companyName,
-        companyName: payload.companyName,
-        title: null,
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        phone: payload.phone,
-        address1: payload.address1,
-        address2: null,
-        city: payload.city,
-        state: null,
-        zip: payload.zip,
-        created: date.toDateString()
-      };
-
-      state.customers.push(customer);
+      state.customers.push(payload);
      
     },
 
@@ -166,25 +147,63 @@ export const store = new Vuex.Store({
   
   actions: {
 
-    addCustomer({ commit }, payload) {
+    createCustomer({ commit }, payload) {
 
-     
-      //todo: store in db, then add to local view
+      return new Promise((resolve, reject) => {
+        //todo: store in db, then add to local view
+        var options = {
+          method:'post',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          data: payload
+        };
 
-      commit('saveCustomer', payload);
-      console.log("store is adding customer to db");
+        axios('http://li708-14.members.linode.com:5000/customer/create', options)
+        .then((response) => {
+          
+          var newCustomer = Object.assign({id:response.data.id}, payload);
+          console.log(newCustomer);
+          store.commit('saveCustomer', newCustomer);
+          resolve(newCustomer);
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
+    },
+    fetchCustomer({ commit }, payload) {
 
-     
+    },
+    fetchCustomerList( { commit }, data) {
+    
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        
+        axios('http://li708-14.members.linode.com:5000/customer/list/all', options)
+        .then((response) => {
+         
+          store.state.customers = response.data;
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      })
+
     },
     addJob({ commit }, payload) {
 
-     
       //todo: store in db, then add to local view
-
+    
       commit('saveJob', payload);
       console.log("store is adding job to db");
 
-     
     },
     addEstimate({ commit }, payload) {
       //todo: store in db, then add to local view
