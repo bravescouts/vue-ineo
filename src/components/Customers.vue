@@ -19,7 +19,7 @@
        
          <el-table
       :data="getCustomers"
-      max-height="400"
+      max-height="300"
       size="mini"
       :default-sort = "{prop: 'firstName', order: 'descending'}"
       style="width: 100%">

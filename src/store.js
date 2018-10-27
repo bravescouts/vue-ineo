@@ -48,7 +48,29 @@ export const store = new Vuex.Store({
         return currCustomer.id == idx;
       });
 
-      state.customers.splice(state.customers.indexOf(currCustomer), 1);
+      
+
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        
+        axios('http://li708-14.members.linode.com:5000/customer/delete/'+currCustomer.id, options)
+        .then((response) => {
+         
+          state.customers.splice(state.customers.indexOf(currCustomer), 1);
+          
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
+
+
 
     },
 
@@ -213,25 +235,6 @@ export const store = new Vuex.Store({
     register({ commit }, userId) {
 
       return new Promise((resolve, reject) => {
-
-    /*
-        axios({
-          method:'get',
-          auth: {
-            username: '',
-            password: ''
-          },
-          headers: {
-            'OSvC-CREST-Application-Context':'test'
-          },
-          url:'https://westerndigital--tst2.custhelp.com/services/rest/connect/v1.4/RMAs.RMA/2901',
-          responseType:'application/json'
-        })
-          .then(function(response) {
-            console.log("done with get "+ response.data.lookupName);
-        });
-    */    
-      
 
       setTimeout(() => {
           commit('register', userId)
