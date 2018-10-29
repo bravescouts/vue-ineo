@@ -13,30 +13,35 @@
         width="40">
       </el-table-column>
        <el-table-column
-        prop="companyName"
-        label="Company"
+        prop="cust_id"
+        label="Cust ID"
         sortable
         width="120">
       </el-table-column>
       <el-table-column
-        prop="supervisor"
-        label="Supervisor"
+        prop="site_id"
+        label="Site ID"
         sortable
         width="100">
       </el-table-column>
       <el-table-column
-        prop="address1"
-        label="Address"
+        prop="name"
+        label="Name"
         width="160">
       </el-table-column>
       <el-table-column
-        prop="city"
-        label="City"
+        prop="supervisor_id"
+        label="Supervisor"
         width="150">
       </el-table-column>
       <el-table-column
-        prop="zip"
-        label="Zip"
+        prop="contact_name"
+        label="Contact"
+        width="60">
+      </el-table-column>
+       <el-table-column
+        prop="start_date"
+        label="Start"
         width="60">
       </el-table-column>
       <el-table-column
@@ -66,7 +71,7 @@
     <el-autocomplete
       class="inline-input"
       size="medium"
-      v-model="strCompanyName"
+      v-model="strCustomerName"
       :fetch-suggestions="querySearch"
       placeholder="Customer"
       :trigger-on-focus="false"
@@ -75,13 +80,27 @@
     
   </el-col>
 
+  <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="6">
+ 
+    <el-autocomplete
+      class="inline-input"
+      size="medium"
+      v-model="strSiteName"
+      :fetch-suggestions="querySearchSite"
+      placeholder="Site"
+      :trigger-on-focus="false"
+      @select="handleSelectSite">
+      </el-autocomplete>
+    
+  </el-col>
+
   <el-col :xs="3" :sm="4" :md="4" :lg="7" :xl="8">
    <div> 
      <el-input
     size="medium"
-    placeholder="Supervisor"
-    v-model="strSupervisor">
-    <template slot="prepend">Supervisor</template>
+    placeholder="JobName"
+    v-model="strJobName">
+    <template slot="prepend">JobName</template>
     </el-input>
   </div>
   </el-col>
@@ -120,6 +139,18 @@
     </div>
   </el-col>
   </el-row>   
+<el-row>
+<el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+    <div>
+    <el-input
+    size="medium"
+    placeholder="Contact"
+    v-model="strContactName"> 
+    <template slot="prepend">Contact Name</template>
+    </el-input>
+    </div>
+  </el-col>
+  </el-row>   
 
      <p></p>
      <el-button type="primary" @click="saveJob()">Add</el-button>
@@ -145,10 +176,15 @@ export default {
       strAddress1: "",
       strCity: "",
       strZip:"",
+      strJobName:"",
+      strContactName:"",
       customerID:0,
+      siteID:0,
       tableData: this.$store.state.jobs,
       links: [],
-      strCompanyName: '',
+      sites: [],
+      strCustomerName: '',
+      strSiteName: '',
       timeout:  null
     };
   },
@@ -158,18 +194,23 @@ export default {
 
       //dispatch calls an action which allows the async behavior
       this.$store.dispatch('addJob', {
-        companyName:this.strCompanyName,
-        supervisor:this.strSupervisor,
-        address1: this.strAddress1,
-        city:this.strCity,
-        zip: this.strZip
+        name: this.strJobName,
+        cust_id:this.$store.state.currCustomerID,
+        site_id:this.$store.state.currSiteID,
+        supervisor_id:1,
+        contact_name: this.strContactName,
+        start_date: "2018-10-29",
+        type: 1,
+        status: 1
       });
 
       this.strCompanyName = "";
       this.strSupervisor = "";
       this.strAddress1 = "";
+      this.strJobName = "";
       this.strCity = "";
       this.strZip = "";
+      this.strContactName = "";
      
     },
     handleEdit(index, row) {
@@ -183,6 +224,12 @@ export default {
     handleEstimates(index, row) {
       router.push('/estimates/'+row.address1);
     },
+    querySearchSite(queryString, cb) {
+        var sites = this.sites;
+        var results = queryString ? sites.filter(this.createFilter(queryString)) : sites;
+        // call callback function to return suggestions
+        cb(results);
+    },
     querySearch(queryString, cb) {
         var links = this.links;
         var results = queryString ? links.filter(this.createFilter(queryString)) : links;
@@ -195,16 +242,38 @@ export default {
         };
       },
      
+      handleSelectSite(item) {
+        this.siteID = item.id;
+      },
       handleSelect(item) {
         this.customerID = item.id;
       }
   },
    mounted() {
     
+      const selectedCustomer = this.$store.state.customers.find( curr => {
+        return curr.id == this.$store.state.currCustomerID;
+      });
+      this.strCustomerName = selectedCustomer.customer_name;
+
+
+      const selectedSite = this.$store.state.sites.find( curr => {
+        return curr.id == this.$store.state.currSiteID;
+      });
+      this.strSiteName = selectedSite.site_name;
+
+
       this.$store.dispatch('fetchCustomerList', null)
           .then((r) => {
             
             this.links = r;
+      });
+
+
+      this.$store.dispatch('fetchSiteList', null)
+          .then((r) => {
+            
+            this.sites = r;
       });
   
 

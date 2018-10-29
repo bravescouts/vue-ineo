@@ -12,25 +12,13 @@ export const store = new Vuex.Store({
     jobs: [],
     sites: [],
     estimates: [],
-    users: [
-        {id: 1, value: 'Max', name: 'Max', registered: false},
-        {id: 2, value: 'Anna', name: 'Anna', registered: false},
-        {id: 3, value: 'Chris', name: 'Chris', registered: false},
-        {id: 4, value: 'Sven', name: 'Sven', registered: false}
-    ]
+    currCustomerID: 0,
+    currSiteID: 0,
+    currJob: 0
+    
   },
   getters: {
-    unregisteredUsers(state) {
-      return state.users.filter(user => {
-        return !user.registered;
-      });
-    },
-    registrations(state) {
-      return state.registrations;
-    },
-    totalRegistrations(state) {
-      return state.registrations.length;
-    },
+    
     customers(state) {
       return state.customers;
     }
@@ -111,24 +99,7 @@ export const store = new Vuex.Store({
     saveJob(state, payload) {
       const date = new Date;
       
-      var newID = state.maxID + 1;
-      state.maxID = newID;
-
-      const job = {
-        id: newID,
-        value: payload.companyName,
-        companyName: payload.companyName,
-        title: null,
-        supervisor: payload.supervisor,
-        address1: payload.address1,
-        address2: null,
-        city: payload.city,
-        state: null,
-        zip: payload.zip,
-        created: date.toDateString()
-      };
-
-      state.jobs.push(job);
+      state.jobs.push(payload);
      
     },
 
@@ -304,10 +275,28 @@ export const store = new Vuex.Store({
     },
     addJob({ commit }, payload) {
 
-      //todo: store in db, then add to local view
-    
-      commit('saveJob', payload);
-      console.log("store is adding job to db");
+      return new Promise((resolve, reject) => {
+        //todo: store in db, then add to local view
+        var options = {
+          method:'post',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          data: payload
+        };
+
+        axios('http://li708-14.members.linode.com:5000/job/create', options)
+        .then((response) => {
+          
+          var newJob = Object.assign({id:response.data.id}, payload);
+          
+          store.commit('saveJob', newJob);
+          resolve(newJob);
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
 
     },
     addEstimate({ commit }, payload) {

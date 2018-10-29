@@ -26,7 +26,14 @@
         label="ID"
         width="40">
       </el-table-column>
-       <el-table-column
+      <el-table-column
+        prop="cust_id"
+        label="Customer ID"
+        sortable
+        width="100">
+      </el-table-column>
+      
+      <el-table-column
         prop="site_name"
         label="Site Name"
         sortable
@@ -78,8 +85,7 @@
           @click="handleDelete(scope.$index, scope.row)"></el-button>
         <el-button
          type="info" icon="el-icon-setting" circle
-          @click="$router.push('/2')">
-        </el-button>
+          @click="handleJobCreate(scope.$index, scope.row)"></el-button>
       </template>
     </el-table-column>
       </el-table>
@@ -185,6 +191,7 @@ Search
 
 <script>
 import { bus } from '../main'
+import { router } from '../main'
 import Autocomplete from 'vuejs-auto-complete'
 
 export default {
@@ -233,7 +240,7 @@ export default {
         county:"Brazos",
         latitude: "1",
         longitude: "2",
-        cust_id: 60,
+        cust_id: this.customerID,
         type: 1
         });
 
@@ -252,6 +259,12 @@ export default {
     handleDelete(index, row) {
       this.$store.commit("deleteSite", row.id);
       this.$message('Site Deleted.');
+    },
+    handleJobCreate(index, row) {
+      this.$store.state.currSiteID = row.id;
+      this.$store.state.currCustomerID = row.cust_id;
+      this.$router.push('/2');
+
     },
     filterTag(value, row) {
       return row.city === value;
