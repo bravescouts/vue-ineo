@@ -145,13 +145,13 @@ export default {
       strAddress1: "",
       strCity: "",
       strZip:"",
+      customerID:0,
       tableData: this.$store.state.jobs,
       links: [],
       strCompanyName: '',
       timeout:  null
     };
   },
-   
   methods: {
     saveJob() {
       console.log("for city =" + this.strCity);
@@ -194,16 +194,21 @@ export default {
           return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      loadAll() {
-        return this.$store.state.customers;
-      },
+     
       handleSelect(item) {
-        this.strCompanyName = item.companyName;
+        this.customerID = item.id;
       }
   },
-  mounted() {
-      this.links = this.loadAll();
-  }
+   mounted() {
+    
+      this.$store.dispatch('fetchCustomerList', null)
+          .then((r) => {
+            
+            this.links = r;
+      });
+  
+
+  },
 };
 </script>
 

@@ -10,6 +10,7 @@ export const store = new Vuex.Store({
     registrations: [],
     customers: [],
     jobs: [],
+    sites: [],
     estimates: [],
     users: [
         {id: 1, value: 'Max', name: 'Max', registered: false},
@@ -42,13 +43,18 @@ export const store = new Vuex.Store({
      
     },
 
+    saveSite(state, payload) {
+      const date = new Date;
+      
+      state.sites.push(payload);
+     
+    },
+
     deleteCustomer(state, idx) {
       
       const currCustomer = state.customers.find(currCustomer => {
         return currCustomer.id == idx;
       });
-
-      
 
       return new Promise((resolve, reject) => {
 
@@ -71,6 +77,34 @@ export const store = new Vuex.Store({
       });
 
 
+
+    },
+
+    deleteSite(state, idx) {
+      
+      const currSite = state.sites.find(currSite => {
+        return currSite.id == idx;
+      });
+
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        console.log("site id = " + idx);
+        axios('http://li708-14.members.linode.com:5000/site/delete/'+currSite.id, options)
+        .then((response) => {
+         
+          state.sites.splice(state.sites.indexOf(currSite), 1);
+          
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
 
     },
 
@@ -194,6 +228,33 @@ export const store = new Vuex.Store({
         });
       });
     },
+
+    createSite({ commit }, payload) {
+
+      return new Promise((resolve, reject) => {
+        //todo: store in db, then add to local view
+        var options = {
+          method:'post',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          data: payload
+        };
+
+        axios('http://li708-14.members.linode.com:5000/site/create', options)
+        .then((response) => {
+          
+          var newSite = Object.assign({id:response.data.id}, payload);
+          
+          store.commit('saveSite', newSite);
+          resolve(newSite);
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
+    },
+
     fetchCustomer({ commit }, payload) {
 
     },
@@ -210,6 +271,28 @@ export const store = new Vuex.Store({
         .then((response) => {
          
           store.state.customers = response.data;
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      })
+
+    },
+    fetchSiteList( { commit }, data) {
+    
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        
+        axios('http://li708-14.members.linode.com:5000/site/list/all', options)
+        .then((response) => {
+         
+          store.state.sites = response.data;
           resolve(response.data);
 
         })

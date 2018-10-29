@@ -12,6 +12,10 @@
               <span slot="title"><h1>Customers</h1></span>
              </el-menu-item>
 
+            <el-menu-item v-on:click="$router.push('/5')" index="2" router=router>
+                <span slot="title"><h1>Sites</h1></span>
+            </el-menu-item>
+
             <el-menu-item v-on:click="$router.push('/2')" index="2" router=router>
                 <span slot="title"><h1>Jobs</h1></span>
             </el-menu-item>
@@ -40,6 +44,7 @@
   import Registration from './components/Registration.vue';
   import Registrations from './components/Registrations.vue';
   import Customers from './components/Customers.vue';
+  import Sites from './components/Sites.vue';
   import Autocomplete from 'vuejs-auto-complete'
 
   import { router } from './main'

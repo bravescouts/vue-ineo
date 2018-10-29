@@ -1,8 +1,6 @@
 <template>
-    <div id="customers">
-               
-        <app-customer-editor ref="editor"></app-customer-editor>
-
+    <div id="sites">
+  
 <el-row :gutter="20">
   <el-col :span="6">
     <div class="grid-content bg-purple">
@@ -12,13 +10,13 @@
   </el-col>
   <el-col :span="6">
     <div class="grid-content bg-purple">
-    <el-tag>Customers</el-tag>
+    <el-tag>Sites</el-tag>
     </div>
   </el-col>
 </el-row>
        
          <el-table
-      :data="getCustomers"
+      :data="getSites"
       max-height="300"
       size="mini"
       :default-sort = "{prop: 'firstName', order: 'descending'}"
@@ -29,23 +27,18 @@
         width="40">
       </el-table-column>
        <el-table-column
-        prop="customer_name"
-        label="Cust Name"
+        prop="site_name"
+        label="Site Name"
         sortable
         width="100">
       </el-table-column>
       <el-table-column
-        prop="first_name"
-        label="First"
+        prop="contact_name"
+        label="Contact"
         sortable
         width="100">
       </el-table-column>
-      <el-table-column 
-        prop="last_name"
-        label="Last"
-        width="100">
-      </el-table-column>
-      <el-table-column
+     <el-table-column
         prop="phone"
         label="Phone"
         width="100">
@@ -98,44 +91,41 @@ Search
   </el-collapse-item>
   <el-collapse-item title="NEW" name="2">
     <div>
-    
-        <el-row :gutter="10" class="row-bg">
-      <el-col :xs="4" :sm="6" :md="7" :lg="8" :xl="9">
-       <div> 
-         <el-input
-        size="medium"
-        placeholder="Company Name"
-        v-model="strCompanyName">
-        <template slot="prepend">Company</template>
-        </el-input>
-      </div>
-      </el-col>
-     
-      </el-row>
+
+      <el-autocomplete
+      class="inline-input"
+      size="medium"
+      v-model="strCompanyName"
+      :fetch-suggestions="querySearch"
+      placeholder="Customer"
+      :trigger-on-focus="false"
+      @select="handleSelect">
+      </el-autocomplete>
+
 
       <el-row :gutter="10" class="row-bg">
+        <el-col :xs="4" :sm="6" :md="7" :lg="8" :xl="9">
+          <div> 
+            <el-input
+            size="medium"
+            placeholder="Site Name"
+            v-model="strSiteName">
+            <template slot="prepend">Site</template>
+            </el-input>
+          </div>
+        </el-col>
       
-      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+       <el-col :xs="4" :sm="6" :md="7" :lg="8" :xl="9">
        <div> 
          <el-input
         size="medium"
-        placeholder="First Name"
-        v-model="strFirstName">
-        <template slot="prepend">First</template>
+        placeholder="Contact Name"
+        v-model="strContactName">
+        <template slot="prepend">Contact Name</template>
         </el-input>
       </div>
       </el-col>
-
-      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
-       <div> 
-         <el-input
-        size="medium"
-        placeholder="Last Name"
-        v-model="strLastName">
-        <template slot="prepend">Last</template>
-        </el-input>
-      </div>
-      </el-col>
+      
       <el-col :xs="2" :sm="3" :md="4" :lg="6" :xl="7">
         <div>
         <el-input
@@ -150,7 +140,7 @@ Search
       </el-row>
 
       <el-row :gutter="10" class="row-bg">
-     <el-col :xs="2" :sm="3" :md="4" :lg="8" :xl="9">
+      <el-col :xs="2" :sm="3" :md="4" :lg="8" :xl="9">
        <div> 
          <el-input
         size="medium"
@@ -181,8 +171,9 @@ Search
         </div>
       </el-col>
       </el-row>
-         <p></p>
-         <el-button type="primary" @click="saveCustomer()">Add</el-button>
+
+
+    <el-button type="primary" @click="saveSite()">Add</el-button>
 
     </div>
   </el-collapse-item>
@@ -193,45 +184,45 @@ Search
 </template>
 
 <script>
-import CustomerEditor from './CustomerEditor.vue'
 import { bus } from '../main'
 import Autocomplete from 'vuejs-auto-complete'
 
 export default {
   components:{
-    'app-customer-editor':CustomerEditor,
     Autocomplete
   },
 
   data() {
     return {
+      strCompanyName: null,
+      links: [],
       activeName: '1',
-      strCompanyName: "",
-      strFirstName: "",
+      strSiteName: "",
+      strContactName: "",
       strLastName: "",
       strPhone: "",
       strAddress1: "",
       strCity: "",
       strZip:"",
-      tableData: this.$store.state.customers
+      customerID: 0,
+      tableData: this.$store.state.sites
       
     };
   },
   computed: {
-    getCustomers() {
-      return this.$store.state.customers;
+    getSites() {
+      return this.$store.state.sites;
     }
   },
   methods: {
-    saveCustomer() {
+    saveSite() {
       console.log("for city =" + this.strCity);
 
       //dispatch calls an action which allows the async behavior
-      this.$store.dispatch('createCustomer', {
+      this.$store.dispatch('createSite', {
         
-        customer_name: this.strCompanyName,
-        first_name:this.strFirstName,
-        last_name:this.strLastName,
+        site_name: this.strSiteName,
+        contact_name:this.strContactName,
         phone:this.strPhone,
         address_1:this.strAddress1,
         address_2:null,
@@ -239,12 +230,15 @@ export default {
         postal_code:this.strZip,
         province:1,
         country:1,
-        county:"Brazos"
+        county:"Brazos",
+        latitude: "1",
+        longitude: "2",
+        cust_id: 60,
+        type: 1
         });
 
-      this.strCompanyName = "";
-      this.strFirstName = "";
-      this.strLastName = "";
+      this.strSiteName = "";
+      this.strContactName = "";
       this.strPhone = "";
       this.strAddress1 = "";
       this.strCity = "";
@@ -256,9 +250,8 @@ export default {
       bus.$emit('editCustomer', r);
     },
     handleDelete(index, row) {
-      console.log(index, row);
-      this.$store.commit("deleteCustomer", row.id);
-      this.$message('Customer Deleted.');
+      this.$store.commit("deleteSite", row.id);
+      this.$message('Site Deleted.');
     },
     filterTag(value, row) {
       return row.city === value;
@@ -266,16 +259,39 @@ export default {
     filterHandler(value, row, column) {
       const property = column['city'];
       return row[property] === value;
-    }
+    },
+   
+   
+    querySearch(queryString, cb) {
+        var links = this.links;
+        var results = queryString ? links.filter(this.createFilter(queryString)) : links;
+        // call callback function to return suggestions
+        cb(results);
+      },
+      createFilter(queryString) {
+        return (link) => {
+          return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+     
+      handleSelect(item) {
+        this.customerID = item.id;
+      }
+
   },
    mounted() {
     
-      this.$store.dispatch('fetchCustomerList', null)
+      this.$store.dispatch('fetchSiteList', null)
           .then((r) => {
             
             this.cList = r;
       });
   
+      this.$store.dispatch('fetchCustomerList', null)
+          .then((r) => {
+            
+            this.links = r;
+      });
 
   },
  

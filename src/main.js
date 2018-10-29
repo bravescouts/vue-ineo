@@ -8,6 +8,7 @@ import Jobs from './components/Jobs.vue'
 import Estimates from './components/Estimates.vue'
 import Notes from './components/Notes.vue'
 import Home from './components/Home.vue'
+import Sites from './components/Sites.vue'
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -18,6 +19,8 @@ const routes = [
   { path: '/2', component: Jobs },
   { path: '/3', component: Estimates },
   { path: '/4', component: Notes },
+  { path: '/5', component: Sites },
+
   { path: '/estimates/:lbl', component: Estimates, props:true }
   
  
