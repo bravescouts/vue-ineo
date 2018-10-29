@@ -1,11 +1,11 @@
 <template>
     <div id="esimates">
-        {{ lbl }}
+        {{ jobID }}
         <app-estimate-editor ref="editor"></app-estimate-editor>
         <h3>Estimates</h3>
          <el-table
       size="mini"
-      :data="tableData"
+      :data="getEstimates"
       :default-sort = "{prop: 'firstName', order: 'descending'}"
       style="width: 100%">
       <el-table-column
@@ -14,39 +14,19 @@
         width="40">
       </el-table-column>
        <el-table-column
-        prop="structSpace"
+        prop="area"
         label="Area"
         sortable
         width="100">
       </el-table-column>
       <el-table-column
-        prop="structLevel"
-        label="Struct. Level"
+        prop="job_id"
+        label="Job"
         sortable
         width="60">
       </el-table-column>
-      <el-table-column
-        prop="plane"
-        label="Plane"
-        width="100">
-      </el-table-column>
-      <el-table-column
-        prop="matlType"
-        label="Matl Type"
-        width="150">
-      </el-table-column>
-      <el-table-column
-        prop="matlSize"
-        label="Size"
-        width="60">
-      </el-table-column>
-      <el-table-column
-        prop="matlThickness"
-        label="Thick"
-        width="60">
-      </el-table-column>
         <el-table-column
-        prop="matlQty"
+        prop="qty"
         label="Qty"
         width="60">
       </el-table-column>
@@ -155,9 +135,10 @@ export default {
     'app-estimate-editor':EstimateEditor,
     'app-estimate-summary':EstimateSummary
   },
-  props: ['lbl'],
+  props: ['jobID'],
   data() {
     return {
+      estimates:[],
        tags: [
           { name: 'Tag 1', type: '' },
           { name: 'Tag 2', type: 'success' },
@@ -262,7 +243,11 @@ export default {
         ]
     };
   },
-   
+  computed: {
+    getEstimates() {
+      return this.$store.state.estimates;
+    }
+  },
   methods: {
     saveEstimate() {
      
@@ -294,18 +279,22 @@ export default {
     console.log(vSheetSpecSize);
     console.log(vSheetSpecType);
     console.log(vSheetSpecThickness);
-
-
      
       //dispatch calls an action which allows the async behavior
       this.$store.dispatch('addEstimate', {
-        structSpace:this.strSpace,
-        structLevel:this.strLevel,
-        plane: this.strPlane,
-        matlSize:vSheetSpecSize.label,
-        matlType:vSheetSpecType.label,
-        matlThickness:vSheetSpecThickness.label,
-        matlQty: this.strQty
+        job_id: 1,
+        area: this.strSpace,
+        area_level: 1,
+        application_type: 1,
+        matl_type: 1,
+        matl_size: 2, 
+        matl_dim: 1, 
+        matl_attr1: null, 
+        matl_attr2: null, 
+        matl_attr3: null,
+        matl_attr4: null,
+        matl_attr5: null,
+        qty: this.strQty
       });
 
      
@@ -339,6 +328,11 @@ export default {
   },
   mounted() {
       this.links = this.loadAll();
+       this.$store.dispatch('fetchEstimateList', null)
+          .then((r) => {
+            
+            this.estimates = r;
+      });
   }
 };
 </script>

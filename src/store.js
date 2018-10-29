@@ -102,7 +102,12 @@ export const store = new Vuex.Store({
       state.jobs.push(payload);
      
     },
-
+    saveEstimate(state, payload) {
+      const date = new Date;
+      
+      state.estimates.push(payload);
+     
+    },
     deleteJob(state, idx) {
       
       const currJob = state.jobs.find(currJob => {
@@ -113,27 +118,6 @@ export const store = new Vuex.Store({
 
     },
 
-    saveEstimate(state, payload) {
-      const date = new Date;
-      
-      var newID = state.maxID + 1;
-      state.maxID = newID;
-
-      const estimate = {
-        id: newID,
-        structSpace:payload.structSpace,
-        structLevel:payload.structLevel,
-        plane:payload.plane,
-        matlSize:payload.matlSize,
-        matlType:payload.matlType,
-        matlThickness:payload.matlThickness,
-        matlQty:payload.matlQty,
-        created: date.toDateString()
-      };
-
-      state.estimates.push(estimate);
-     
-    },
 
     deleteEstimate(state, idx) {
       
@@ -273,6 +257,50 @@ export const store = new Vuex.Store({
       })
 
     },
+    fetchJobList( { commit }, data) {
+    
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        
+        axios('http://li708-14.members.linode.com:5000/job/list/all', options)
+        .then((response) => {
+         
+          store.state.jobs = response.data;
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      })
+
+    },
+    fetchEstimateList( { commit }, data) {
+    
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        
+        axios('http://li708-14.members.linode.com:5000/materialestimate/list/all', options)
+        .then((response) => {
+         
+          store.state.estimates = response.data;
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      })
+
+    },
     addJob({ commit }, payload) {
 
       return new Promise((resolve, reject) => {
@@ -300,9 +328,30 @@ export const store = new Vuex.Store({
 
     },
     addEstimate({ commit }, payload) {
-      //todo: store in db, then add to local view
-      commit('saveEstimate', payload);
-      console.log("store is adding estimate to db");
+
+      return new Promise((resolve, reject) => {
+        //todo: store in db, then add to local view
+        var options = {
+          method:'post',
+          headers: {
+            'Content-Type':'application/json'
+          },
+          data: payload
+        };
+
+        axios('http://li708-14.members.linode.com:5000/materialestimate/create', options)
+        .then((response) => {
+          
+          var newEstimate = Object.assign({id:response.data.id}, payload);
+          
+          store.commit('saveEstimate', newEstimate);
+          resolve(newEstimate);
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
+
     },
     register({ commit }, userId) {
 

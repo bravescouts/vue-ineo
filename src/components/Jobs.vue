@@ -4,7 +4,7 @@
         <h3>Jobs</h3>
          <el-table
          size="mini"
-      :data="tableData"
+      :data="getJobs"
       :default-sort = "{prop: 'firstName', order: 'descending'}"
       style="width: 100%">
       <el-table-column
@@ -140,7 +140,7 @@
   </el-col>
   </el-row>   
 <el-row>
-<el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+<el-col :xs="2" :sm="3" :md="6" :lg="7" :xl="8">
     <div>
     <el-input
     size="medium"
@@ -150,6 +150,11 @@
     </el-input>
     </div>
   </el-col>
+   <el-date-picker
+      v-model="strDate"
+      type="date"
+      placeholder="Pick a day">
+    </el-date-picker>
   </el-row>   
 
      <p></p>
@@ -177,16 +182,23 @@ export default {
       strCity: "",
       strZip:"",
       strJobName:"",
+      strDate:"",
       strContactName:"",
       customerID:0,
       siteID:0,
       tableData: this.$store.state.jobs,
-      links: [],
+      links:[],
+      jobs: [],
       sites: [],
       strCustomerName: '',
       strSiteName: '',
       timeout:  null
     };
+  },
+  computed: {
+    getJobs() {
+      return this.$store.state.jobs;
+    }
   },
   methods: {
     saveJob() {
@@ -199,7 +211,7 @@ export default {
         site_id:this.$store.state.currSiteID,
         supervisor_id:1,
         contact_name: this.strContactName,
-        start_date: "2018-10-29",
+        start_date: this.strDate,
         type: 1,
         status: 1
       });
@@ -222,7 +234,7 @@ export default {
       this.$store.commit("deleteJob", row.id);
     },
     handleEstimates(index, row) {
-      router.push('/estimates/'+row.address1);
+      router.push('/estimates/'+row.id);
     },
     querySearchSite(queryString, cb) {
         var sites = this.sites;
@@ -261,6 +273,13 @@ export default {
         return curr.id == this.$store.state.currSiteID;
       });
       this.strSiteName = selectedSite.site_name;
+
+
+     this.$store.dispatch('fetchJobList', null)
+          .then((r) => {
+            
+            this.jobs = r;
+      });
 
 
       this.$store.dispatch('fetchCustomerList', null)

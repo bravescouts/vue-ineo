@@ -9,9 +9,10 @@ import Estimates from './components/Estimates.vue'
 import Notes from './components/Notes.vue'
 import Home from './components/Home.vue'
 import Sites from './components/Sites.vue'
+import locale from 'element-ui/lib/locale/lang/en'
 
 Vue.use(VueRouter);
-Vue.use(ElementUI);
+Vue.use(ElementUI,{locale});
 
 const routes = [ 
   { path: '/0', component: Home },
@@ -21,7 +22,7 @@ const routes = [
   { path: '/4', component: Notes },
   { path: '/5', component: Sites },
 
-  { path: '/estimates/:lbl', component: Estimates, props:true }
+  { path: '/estimates/:jobID', component: Estimates, props:true }
   
  
 ];
