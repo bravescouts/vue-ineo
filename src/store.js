@@ -125,7 +125,27 @@ export const store = new Vuex.Store({
         return currEstimate.id == idx;
       });
 
-      state.estimates.splice(state.estimates.indexOf(currEstimate), 1);
+      return new Promise((resolve, reject) => {
+
+        var options = {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json' }
+        }
+        console.log("site id = " + idx);
+        axios('http://li708-14.members.linode.com:5000/materialestimate/delete/'+currEstimate.id, options)
+        .then((response) => {
+         
+          state.estimates.splice(state.estimates.indexOf(currEstimate), 1);
+          
+          resolve(response.data);
+
+        })
+        .catch((error) => {
+          resolve(error.message);
+        });
+      });
+
+      
 
     },
     

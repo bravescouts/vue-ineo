@@ -306,6 +306,7 @@ export default {
     handleDelete(index, row) {
       console.log(index, row);
       this.$store.commit("deleteEstimate", row.id);
+      this.$message({message:'Estimate Deleted.', type:'success'});
     },
     
     querySearch(queryString, cb) {
@@ -319,18 +320,16 @@ export default {
           return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      loadAll() {
-        return this.$store.state.estimates;
-      },
+      
       handleSelect(item) {
         this.strCompanyName = item.companyName;
       }
   },
   mounted() {
-      this.links = this.loadAll();
+
        this.$store.dispatch('fetchEstimateList', null)
           .then((r) => {
-            
+            console.log(r);
             this.estimates = r;
       });
   }
